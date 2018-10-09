@@ -2,7 +2,7 @@
  * Author: Rod Howell
  */
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Ksu.Cis300.TrieLibrary
 {
     /// <summary>
-    /// A single node of a trie with no children.
+    /// A trie node with no children.
     /// </summary>
     public class TrieWithNoChildren : ITrie
     {
@@ -20,8 +20,7 @@ namespace Ksu.Cis300.TrieLibrary
         private bool _hasEmptyString = false;
 
         /// <summary>
-        /// Returns the result of adding the given string to the trie rooted at this node.
-        /// The trie rooted at this node may or may not be changed.
+        /// Adds the given string to this trie.
         /// </summary>
         /// <param name="s">The string to add.</param>
         /// <returns>The resulting trie.</returns>
@@ -39,24 +38,10 @@ namespace Ksu.Cis300.TrieLibrary
         }
 
         /// <summary>
-        /// Adds all of the strings in this trie alphabetically to the end of the given list, with each
-        /// string prefixed by the given prefix.
+        /// Determines whether this trie contains the given string.
         /// </summary>
-        /// <param name="prefix">The prefix.</param>
-        /// <param name="list">The list to which the strings are to be added.</param>
-        public void AddAll(StringBuilder prefix, IList list)
-        {
-            if (_hasEmptyString)
-            {
-                list.Add(prefix.ToString());
-            }
-        }
-
-        /// <summary>
-        /// Determines whether the trie rooted at this node contains the given string.
-        /// </summary>
-        /// <param name="s">The string to look up.</param>
-        /// <returns>Whether the trie rooted at this node contains s.</returns>
+        /// <param name="s">The string to look for.</param>
+        /// <returns>Whether this trie contains s.</returns>
         public bool Contains(string s)
         {
             if (s == "")
@@ -66,24 +51,6 @@ namespace Ksu.Cis300.TrieLibrary
             else
             {
                 return false;
-            }
-        }
-
-        /// <summary>
-        /// Gets all of the strings that form words in this trie when appended to the given prefix.
-        /// </summary>
-        /// <param name="prefix">The prefix</param>
-        /// <returns>A trie containing all of the strings that form words in this trie when appended
-        /// to the given prefix.</returns>
-        public ITrie GetCompletions(string prefix)
-        {
-            if (prefix == "")
-            {
-                return this;
-            }
-            else
-            {
-                return null;
             }
         }
     }

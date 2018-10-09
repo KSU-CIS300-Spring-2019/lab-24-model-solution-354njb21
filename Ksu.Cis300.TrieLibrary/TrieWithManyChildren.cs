@@ -2,7 +2,7 @@
  * Author: Rod Howell
  */
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,14 +10,14 @@ using System.Threading.Tasks;
 namespace Ksu.Cis300.TrieLibrary
 {
     /// <summary>
-    /// A single node of a trie with more than one child.
+    /// A single node of a Trie with at least two children.
     /// </summary>
     public class TrieWithManyChildren : ITrie
     {
         /// <summary>
         /// Indicates whether the trie rooted at this node contains the empty string.
         /// </summary>
-        private bool _hasEmptyString = false;
+        private bool _hasEmptyString;
 
         /// <summary>
         /// The children of this node.
@@ -44,26 +44,23 @@ namespace Ksu.Cis300.TrieLibrary
             _children[childLabel - 'a'] = child;
             Add(s);
         }
-
+        
         /// <summary>
-        /// Determines whether the trie rooted at this node contains the given string.
-        /// </summary>
-        /// <param name="s">The string to look up.</param>
-        /// <returns>Whether the trie contains s.</returns>
+                 /// Determines whether the trie rooted at this node contains the given string.
+                 /// </summary>
+                 /// <param name="s">The string to look up.</param>
+                 /// <returns>Whether the trie rooted at this node contains s.</returns>
         public bool Contains(string s)
         {
             if (s == "")
             {
                 return _hasEmptyString;
             }
-            else if (s[0] < 'a' || s[0] > 'z')
-            {
-                return false;
-            }
             else
             {
-                int loc = s[0] - 'a';
-                if (_children[loc] == null)
+                char c = s[0];
+                int loc = c - 'a';
+                if (c < 'a' || c > 'z' || _children[loc] == null)
                 {
                     return false;
                 }
@@ -76,6 +73,8 @@ namespace Ksu.Cis300.TrieLibrary
 
         /// <summary>
         /// Adds the given string to the trie rooted at this node.
+        /// If the string contains any character other than a lower-case
+        /// English character, throws an ArgumentException.
         /// </summary>
         /// <param name="s">The string to add.</param>
         /// <returns>The resulting trie.</returns>
@@ -85,13 +84,14 @@ namespace Ksu.Cis300.TrieLibrary
             {
                 _hasEmptyString = true;
             }
-            else if (s[0] < 'a' || s[0] > 'z')
-            {
-                throw new ArgumentException();
-            }
             else
             {
-                int loc = s[0] - 'a';
+                char c = s[0];
+                int loc = c - 'a';
+                if (c < 'a' || c > 'z')
+                {
+                    throw new ArgumentException();
+                }
                 if (_children[loc] == null)
                 {
                     _children[loc] = new TrieWithNoChildren();
@@ -99,59 +99,6 @@ namespace Ksu.Cis300.TrieLibrary
                 _children[loc] = _children[loc].Add(s.Substring(1));
             }
             return this;
-        }
-
-        /// <summary>
-        /// Gets all of the strings that form words in this trie when appended to the given prefix.
-        /// </summary>
-        /// <param name="prefix">The prefix</param>
-        /// <returns>A trie containing all of the strings that form words in this trie when appended
-        /// to the given prefix.</returns>
-        public ITrie GetCompletions(string prefix)
-        {
-            if (prefix == "")
-            {
-                return this;
-            }
-            else if (prefix[0] < 'a' || prefix[0] > 'z')
-            {
-                return null;
-            }
-            else
-            {
-                int loc = prefix[0] - 'a';
-                if (_children[loc] == null)
-                {
-                    return null;
-                }
-                else
-                {
-                    return _children[loc].GetCompletions(prefix.Substring(1));
-                }
-            }
-        }
-
-        /// <summary>
-        /// Adds all of the strings in this trie alphabetically to the end of the given list, with each
-        /// string prefixed by the given prefix.
-        /// </summary>
-        /// <param name="prefix">The prefix.</param>
-        /// <param name="list">The list to which the strings are to be added.</param>
-        public void AddAll(StringBuilder prefix, IList list)
-        {
-            if (_hasEmptyString)
-            {
-                list.Add(prefix.ToString());
-            }
-            for (int i = 0; i < _children.Length; i++)
-            {
-                if (_children[i] != null)
-                {
-                    prefix.Append((char)(i + 'a'));
-                    _children[i].AddAll(prefix, list);
-                    prefix.Length--;
-                }
-            }
         }
     }
 }
