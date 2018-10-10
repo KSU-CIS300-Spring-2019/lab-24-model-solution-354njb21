@@ -31,24 +31,9 @@ namespace Ksu.Cis300.Boggle
         private const int _minimumWordLength = 4;
 
         /// <summary>
-        /// The font size to use to compute the maximum pixel length of a string on a die.
-        /// </summary>
-        private const float _testFontSize = 42f;
-
-        /// <summary>
-        /// The maximum fraction of a die's width to be occupied by its string.
-        /// </summary>
-        private const float _fractionOfDieUsed = 0.8f;
-
-        /// <summary>
         /// The current board contents.
         /// </summary>
         private string[,] _board = new string[_gridSize, _gridSize];
-
-        /// <summary>
-        /// The longest string shown on a die.
-        /// </summary>
-        private const string _longestString = "Qu";
 
         /// <summary>
         /// The dice.
@@ -98,11 +83,6 @@ namespace Ksu.Cis300.Boggle
         public UserInterface()
         {
             InitializeComponent();
-            uxBoard.Rows.Add(_gridSize);
-            for (int i = 0; i < _gridSize; i++)
-            {
-                uxBoard.Rows[i].Height = uxBoard.Columns[0].Width;
-            }
             GenerateNewBoard();
         }
 
@@ -114,6 +94,7 @@ namespace Ksu.Cis300.Boggle
             int k = _dice.Length;
             for (int i = 0; i < _gridSize; i++)
             {
+                FlowLayoutPanel row = (FlowLayoutPanel)uxBoard.Controls[i];
                 for (int j = 0; j < _gridSize; j++)
                 {
                     int loc = _randomNumbers.Next(k);
@@ -121,8 +102,8 @@ namespace Ksu.Cis300.Boggle
                     string[] temp = _dice[loc];
                     _dice[loc] = _dice[k];
                     _dice[k] = temp;
-                    uxBoard[i, j].Value = _dice[k][_randomNumbers.Next(6)];
-                    _board[i, j] = uxBoard[i, j].Value.ToString().ToLower();
+                    row.Controls[j].Text = _dice[k][_randomNumbers.Next(6)];
+                    _board[i, j] = row.Controls[j].Text.ToString().ToLower();
                 }
             }
         }
