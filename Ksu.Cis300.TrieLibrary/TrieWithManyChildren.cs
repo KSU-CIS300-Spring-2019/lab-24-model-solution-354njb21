@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Ksu.Cis300.TrieLibrary
 {
     /// <summary>
-    /// A single node of a Trie with at least two children.
+    /// A node of a trie for storing strings made up of lower-case English letters.
     /// </summary>
     public class TrieWithManyChildren : ITrie
     {
@@ -36,7 +36,7 @@ namespace Ksu.Cis300.TrieLibrary
         /// <param name="child">The child labeled childLabel.</param>
         public TrieWithManyChildren(string s, bool hasEmpty, char childLabel, ITrie child)
         {
-            if (childLabel < 'a' | childLabel > 'z')
+            if (childLabel < 'a' || childLabel > 'z')
             {
                 throw new ArgumentException();
             }
@@ -44,12 +44,12 @@ namespace Ksu.Cis300.TrieLibrary
             _children[childLabel - 'a'] = child;
             Add(s);
         }
-        
+
         /// <summary>
-                 /// Determines whether the trie rooted at this node contains the given string.
-                 /// </summary>
-                 /// <param name="s">The string to look up.</param>
-                 /// <returns>Whether the trie rooted at this node contains s.</returns>
+        /// Gets whether the trie rooted at this node contains the given string.
+        /// </summary>
+        /// <param name="s">The string to look up.</param>
+        /// <returns>Whether the trie rooted at this node contains s.</returns>
         public bool Contains(string s)
         {
             if (s == "")
@@ -58,9 +58,8 @@ namespace Ksu.Cis300.TrieLibrary
             }
             else
             {
-                char c = s[0];
-                int loc = c - 'a';
-                if (c < 'a' || c > 'z' || _children[loc] == null)
+                int loc = s[0] - 'a';
+                if (loc < 0 || loc >= _children.Length || _children[loc] == null)
                 {
                     return false;
                 }
@@ -73,8 +72,6 @@ namespace Ksu.Cis300.TrieLibrary
 
         /// <summary>
         /// Adds the given string to the trie rooted at this node.
-        /// If the string contains any character other than a lower-case
-        /// English character, throws an ArgumentException.
         /// </summary>
         /// <param name="s">The string to add.</param>
         /// <returns>The resulting trie.</returns>
@@ -84,14 +81,13 @@ namespace Ksu.Cis300.TrieLibrary
             {
                 _hasEmptyString = true;
             }
+            else if (s[0] < 'a' || s[0] > 'z')
+            {
+                throw new ArgumentException();
+            }
             else
             {
-                char c = s[0];
-                int loc = c - 'a';
-                if (c < 'a' || c > 'z')
-                {
-                    throw new ArgumentException();
-                }
+                int loc = s[0] - 'a';
                 if (_children[loc] == null)
                 {
                     _children[loc] = new TrieWithNoChildren();
@@ -115,9 +111,8 @@ namespace Ksu.Cis300.TrieLibrary
             }
             else
             {
-                char c = prefix[0];
-                int loc = c - 'a';
-                if (c < 'a' || c > 'z' || _children[loc] == null)
+                int loc = prefix[0] - 'a';
+                if (loc < 0 || loc >= _children.Length || _children[loc] == null)
                 {
                     return null;
                 }
@@ -144,7 +139,7 @@ namespace Ksu.Cis300.TrieLibrary
             {
                 if (_children[i] != null)
                 {
-                    prefix.Append((char)('a' + i));
+                    prefix.Append((char)(i + 'a'));
                     _children[i].AddAll(prefix, list);
                     prefix.Length--;
                 }

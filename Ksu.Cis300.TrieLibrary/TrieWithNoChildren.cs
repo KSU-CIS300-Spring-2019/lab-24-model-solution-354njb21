@@ -10,17 +10,18 @@ using System.Threading.Tasks;
 namespace Ksu.Cis300.TrieLibrary
 {
     /// <summary>
-    /// A trie node with no children.
+    /// A trie with no children.
     /// </summary>
     public class TrieWithNoChildren : ITrie
     {
         /// <summary>
-        /// Indicates whether the trie rooted at this node contains the empty string.
+        /// Indicates whether this trie contains the empty string.
         /// </summary>
-        private bool _hasEmptyString = false;
+        private bool _hasEmptyString;
 
         /// <summary>
-        /// Adds the given string to this trie.
+        /// Builds the result of adding the given string to this trie.
+        /// This trie may or may not be changed.
         /// </summary>
         /// <param name="s">The string to add.</param>
         /// <returns>The resulting trie.</returns>
@@ -38,9 +39,23 @@ namespace Ksu.Cis300.TrieLibrary
         }
 
         /// <summary>
+        /// Adds all of the strings in this trie alphabetically to the end of the given list, with each
+        /// string prefixed by the given prefix.
+        /// </summary>
+        /// <param name="prefix">The prefix.</param>
+        /// <param name="list">The list to which the strings are to be added.</param>
+        public void AddAll(StringBuilder prefix, IList list)
+        {
+            if (_hasEmptyString)
+            {
+                list.Add(prefix.ToString());
+            }
+        }
+
+        /// <summary>
         /// Determines whether this trie contains the given string.
         /// </summary>
-        /// <param name="s">The string to look for.</param>
+        /// <param name="s">The string to look up.</param>
         /// <returns>Whether this trie contains s.</returns>
         public bool Contains(string s)
         {
@@ -69,20 +84,6 @@ namespace Ksu.Cis300.TrieLibrary
             else
             {
                 return null;
-            }
-        }
-
-        /// <summary>
-        /// Adds all of the strings in this trie alphabetically to the end of the given list, with each
-        /// string prefixed by the given prefix.
-        /// </summary>
-        /// <param name="prefix">The prefix.</param>
-        /// <param name="list">The list to which the strings are to be added.</param>
-        public void AddAll(StringBuilder prefix, IList list)
-        {
-            if (_hasEmptyString)
-            {
-                list.Add(prefix.ToString());
             }
         }
     }
