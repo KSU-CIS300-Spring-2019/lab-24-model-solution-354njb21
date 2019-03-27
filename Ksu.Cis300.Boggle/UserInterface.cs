@@ -146,5 +146,78 @@ namespace Ksu.Cis300.Boggle
         {
             GenerateNewBoard();
         }
+
+        /// <summary>
+        /// Gets all words in the given results, plus all words formed by starting 
+        /// with the content of the given StringBuilder, followed by a word that is 
+        /// both contained in the given trie of completions and formed by the letters
+        /// on a nonempty path that starts from the given board location, does not
+        /// use any die indicated as used in the given array, and does not use any
+        /// die more than once.
+        /// </summary>
+        /// <param name="row">The row containing the current die.</param>
+        /// <param name="col">The column containing the current die.</param>
+        /// <param name="used">Element [i, j] indicates that the die at location
+        /// [i, j] has been used in the path to the current die.</param>
+        /// <param name="path">The letters on the path to the current die.</param>
+        /// <param name="completions">All completions of the letters on the path to
+        /// form valid words.</param>
+        /// <param name="results">The words found so far.</param>
+        /// <returns>All the words found.</returns>
+        private ITrie GetWords(int row, int col, bool[,] used, StringBuilder path, ITrie completions, ITrie results)
+        {
+            completions = completions.GetCompletions(_board[row, col]);
+            if (completions == null)
+            {
+                return results;
+            }
+            else
+            {
+                used[row, col] = true;
+                path.Append(_board[row, col]);
+                if (completions.Contains(""))
+                {
+                    results = results.Add(path.ToString());
+                }
+                for (int i = Math.Max(0, row - 1); i < Math.Min(_gridSize, row + 2); i++)
+                {
+                    for (int j = Math.Max(0, col - 1); j < Math.Min(_gridSize, col + 2); j++)
+                    {
+                        if (!used[i, j])
+                        {
+                            results = GetWords(i, j, used, path, completions, results);
+                        }
+                    }
+                }
+                used[row, col] = false;
+                path.Length -= _board[row, col].Length;
+                return results;
+            }
+        }
+
+        /// <summary>
+        /// Handles a Click event on the "Find Words" button.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void uxFindWords_Click(object sender, EventArgs e)
+        {
+            ITrie results = new TrieWithNoChildren();
+            bool[,] used = new bool[_gridSize, _gridSize];
+            StringBuilder prefix = new StringBuilder();
+
+            for (int i = 0; i < _gridSize; i++)
+            {
+                for (int j = 0; j < _gridSize; j++)
+                {
+                    results = GetWords(i, j, used, prefix, _wordList, results);
+                }
+            }
+
+            uxWordsFound.Items.Clear();
+            uxWordsFound.BeginUpdate();
+            results.AddAll(new StringBuilder(), uxWordsFound.Items);
+            uxWordsFound.EndUpdate();
+        }
     }
 }
